@@ -29,7 +29,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = 'Lesson'
         verbose_name_plural = 'Lessons'
-        ordering = ['course']  # Order by course name by default in admin interface
+        ordering = ['course']
 
     def __str__(self):
         return self.name + ' ' + self.course
