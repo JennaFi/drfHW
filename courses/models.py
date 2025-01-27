@@ -6,13 +6,14 @@ class Course(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Course Description')
     preview = models.ImageField(upload_to='courses/preview/%Y/%m/%d', blank=True, null=True,
                                 verbose_name='Course Preview')
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='courses', verbose_name='owner',
+                              blank=True,
+                              null=True)
 
     class Meta:
         verbose_name = 'Course'
         verbose_name_plural = 'Courses'
         ordering = ['name']
-
-
 
     def __str__(self):
         return self.name
@@ -25,6 +26,9 @@ class Lesson(models.Model):
     video_url = models.URLField(blank=True, null=True, verbose_name='Video URL')
     preview = models.ImageField(upload_to='lessons/preview/%Y/%m/%d', blank=True, null=True,
                                 verbose_name='Lesson Preview')
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='lessons', verbose_name='owner',
+                              blank=True,
+                              null=True)
 
     class Meta:
         verbose_name = 'Lesson'

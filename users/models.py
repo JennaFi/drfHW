@@ -6,7 +6,7 @@ from courses.models import Lesson, Course
 
 
 class User(AbstractUser):
-    username = None
+    username = models.CharField(max_length=155, verbose_name='username', blank=True, null=True)
     email = models.EmailField(unique=True, verbose_name='Email')
     phone = models.CharField(max_length=35, blank=True, null=True, verbose_name='Phone number')
     city = models.CharField(max_length=50, blank=True, null=True, verbose_name='City')
@@ -22,10 +22,10 @@ class User(AbstractUser):
     def __str__(self):
         return normalize_newlines(self.email)
 
-class Payment(models.Model):
 
+class Payment(models.Model):
     CASH = 'cash'
-    TRANSACTION= 'transaction'
+    TRANSACTION = 'transaction'
 
     METHOD_CHOICES = [
         (CASH, 'Cash'),
@@ -46,9 +46,5 @@ class Payment(models.Model):
         verbose_name_plural = 'Payments'
         ordering = ['-date_of_payment']
 
-
     def __str__(self):
         return f'{self.user} - {self.lesson} - {self.date_of_payment} - {self.get_method_display()}'
-
-
-
