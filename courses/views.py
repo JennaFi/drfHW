@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 
 from courses.models import Course, Lesson, Subscription
 from courses.pagination import CustomPagination
-from courses.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer
+from courses.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer, CoursePaymentSerializer
+from courses.services import create_stipe_price, create_stripe_session
 from users.permissions import IsModerator, IsUser, IsOwner
 
 
@@ -84,3 +85,20 @@ class SubscriptionAPIView(APIView):
             Subscription.objects.create(course=course, user=user)
             message = 'подписка добавлена'
         return Response(message)
+
+class CoursePaymentCreateApiView(generics.CreateAPIView):
+
+    serializer_class = CoursePaymentSerializer
+    permission_classes = [IsUser]
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        course_id = self.request.data.get('course')
+        course = get_object_or_404(Course, id=course_id)
+        amount_in_usd = course.price
+        payment = serializer.save(amount=amount_in_usd)
+        price = create_stipe_price(amount_in_usd, course.name)
+        session_id, payment_link = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()

@@ -2,7 +2,7 @@ from django.db.models import Model
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from courses.models import Course, Lesson, Subscription
+from courses.models import Course, Lesson, Subscription, CoursePayment
 from courses.validators import validate_url
 
 
@@ -30,7 +30,14 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
+
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
+        fields = '__all__'
+
+
+class CoursePaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoursePayment
         fields = '__all__'

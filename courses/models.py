@@ -38,8 +38,10 @@ class Lesson(models.Model):
     def __str__(self):
         return self.name + ' ' + self.course
 
+
 class Subscription(models.Model):
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='courses_subscription', verbose_name='User')
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='courses_subscription',
+                             verbose_name='User')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='subscriptions', verbose_name='Course')
 
     class Meta:
@@ -48,4 +50,21 @@ class Subscription(models.Model):
         unique_together = ('user', 'course')
 
     def __str__(self):
-        return self.user.username +'->'+ self.course.name
+        return self.user.username + '->' + self.course.name
+
+
+class CoursePayment(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_payments', verbose_name='Course')
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, blank=True, null=True,
+                             related_name='course_payments', verbose_name='User')
+    amount = models.PositiveIntegerField(blank=True, null=True, verbose_name='Amount')
+    session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID session')
+    link = models.URLField(max_length=400, blank=True, null=True, verbose_name='Hyperlink to payment')
+
+    class Meta:
+        verbose_name = 'Course Payment'
+        verbose_name_plural = 'Course Payments'
+        ordering = ['-course']
+
+    def __str__(self):
+        return self.course.name + ' ' + self.amount + ' ' + self.user

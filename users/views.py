@@ -9,7 +9,8 @@ from users.permissions import IsUser, IsOwner
 from users.serializers import UserSerializer, PaymentSerializer
 
 
-class PaymentListAPIView(generics.ListAPIView):
+class PaymentViewSet(viewsets.ModelViewSet):
+    model = Payment
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
