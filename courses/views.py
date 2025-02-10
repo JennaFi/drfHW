@@ -9,6 +9,7 @@ from courses.pagination import CustomPagination
 from courses.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer, CoursePaymentSerializer
 from courses.services import create_stipe_price, create_stripe_session
 from users.permissions import IsModerator, IsUser, IsOwner
+from .tasks import send_mail_course_update
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -29,6 +30,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif self.action in ['update', 'retrieve']:
             self.permission_classes = (IsModerator | IsOwner,)
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        course_id = self.kwargs.get('pk')
+        send_mail_course_update.delay(course_id)
 
 
 class LessonCreateApiView(generics.CreateAPIView):
@@ -80,14 +85,14 @@ class SubscriptionAPIView(APIView):
 
         if subs_item.exists():
             subs_item.delete()
-            message = 'подписка удалена'
+            message = 'Subscription deleted'
         else:
             Subscription.objects.create(course=course, user=user)
-            message = 'подписка добавлена'
+            message = 'Subscription renewed'
         return Response(message)
 
-class CoursePaymentCreateApiView(generics.CreateAPIView):
 
+class CoursePaymentCreateApiView(generics.CreateAPIView):
     serializer_class = CoursePaymentSerializer
     permission_classes = [IsUser]
 
